@@ -50,9 +50,27 @@ public class MyMapsActivity extends FragmentActivity implements OnMapReadyCallba
         public void onMapReady (GoogleMap googleMap){
             // Add a marker in Sydney, Australia,
             // and move the map's camera to the same location.
-            LatLng sydney = new LatLng(39.027489, -94.577232);
-            googleMap.addMarker(new MarkerOptions().position(sydney)
-                    .title("Kansas City, United States"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                //get the location name from latitude and longitude
+                Geocoder geocoder = new Geocoder(getApplicationContext());
+                try {
+                    List<Address> addresses =
+                            geocoder.getFromLocation(latitude, longitude, 1);
+                    String result = addresses.get(0).getLocality()+":";
+                    result += addresses.get(0).getCountryName();
+                    result += "Latitude:+latitude+"Logitude:"+longitude;
+                    LatLng latLng = new LatLng(latitude, longitude);
+                    mMap.addMarker(new MarkerOptions().position(latLng).title(result));
+                    mMap.setMaxZoomPreference(20);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
